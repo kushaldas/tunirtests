@@ -11,13 +11,13 @@ class TestServiceManipulation(unittest.TestCase):
     def test_service(self):
         "Tests the crond service."
         out, err, eid = system('systemctl status crond.service')
-        self.assertIn('not running', out)
+        self.assertIn('inactive', out)
         system('systemctl start crond.service')
         out, err, eid = system('systemctl status crond.service')
-        self.assertIn('Disabled but active', out)
+        self.assertIn('disabled', out)
         system('systemctl stop crond.service')
         out, err, eid = system('systemctl status crond.service')
-        self.assertIn('not running', out)
+        self.assertIn('inactive', out)
         system('systemctl enable crond.service')
 
 
@@ -29,6 +29,13 @@ class TestServiceAfter(unittest.TestCase):
         self.assertIn('active (running)', out)
         system('systemctl disable crond.service')
 
+
+class TestServiceFinal(unittest.TestCase):
+
+    def test_service(self):
+        "Tests the crond service."
+        out, err, eid = system('systemctl status crond.service')
+        self.assertIn('disabled', out)
 
 if __name__ == '__main__':
     unittest.main()
