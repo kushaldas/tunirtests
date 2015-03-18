@@ -10,3 +10,11 @@ def system(cmd):
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True)
     out, err = ret.communicate()
     return out, err, ret.returncode
+
+
+def if_atomic():
+    "Tries to identify atomic image."
+    out, err, eid = system('which rpm-ostree')
+    if 'no rpm-ostree' in err:
+        return False
+    return True

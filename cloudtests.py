@@ -1,5 +1,5 @@
 import unittest
-from testutils import system
+from testutils import system, if_atomic
 
 
 class TestBase(unittest.TestCase):
@@ -20,6 +20,13 @@ class TestBase(unittest.TestCase):
         "No service should fail in the startup."
         out, err, eid = system('systemctl --all --failed')
         self.assertIn('0 loaded units listed', out)
+
+    @unittest.skipIf(if_atomic(), "It is an Atomic image.")
+    def test_packageinstall(self):
+        "Tests package install using dnf"
+        system('dnf install pss -y')
+        out, err, eid = system('ls -l /usr/bin/pss')
+        self.assertIn('root', out)
 
 
 if __name__ == '__main__':
