@@ -15,6 +15,11 @@ class TestBase(unittest.TestCase):
         out, err, eid = system('journalctl -a --no-pager -r --since=$(date +%Y-%m-%d) -n1')
         self.assertGreater(len(out.split()), 3, "journalctl output is missing.")
 
+    @unittest.expectedFailure
+    def test_services(self):
+        "No service should fail in the startup."
+        out, err, eid = system('systemctl --all --failed')
+        self.assertIn('0 loaded units listed', out)
 
 
 if __name__ == '__main__':
