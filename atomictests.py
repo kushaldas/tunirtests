@@ -69,9 +69,9 @@ class TestAtomicUpgradePostReboot(unittest.TestCase):
 
     def test_upgrade_post_reboot(self):
         out, err, eid = system(
-            'docker run -it --rm busybox true && echo "PASS"')
+            'docker run --rm busybox true && echo "PASS"')
         print out, err, eid
-        self.assertEquals('PASS', out)
+        self.assertEquals('PASS\n', out)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
@@ -105,9 +105,9 @@ class TestAtomicRollbackPostReboot(unittest.TestCase):
         self.assertTrue(err)
 
         out, err, eid = system(
-            'docker run -ti --rm busybox true && echo "PASS"')
+            'docker run --rm busybox true && echo "PASS"')
         print out, err, eid
-        self.assertEqual(out, 'PASS')
+        self.assertEqual(out, 'PASS\n')
 
 if __name__ == '__main__':
     unittest.main()
