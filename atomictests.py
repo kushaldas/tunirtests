@@ -73,5 +73,41 @@ class TestAtomicUpgradePostReboot(unittest.TestCase):
         print out, err, eid
         self.assertEquals('PASS', out)
 
+
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestAtomicRollbackRun(unittest.TestCase):
+
+    def test_atomic_rollback_run(self):
+        out, err, eid = system(
+            'sudo cat /ostree/repo/refs/heads/ostree/1/1/0 > /etc/file2')
+        print out, err, eid
+        self.assertFalse(err)
+
+        out, err, eid = system('sudo rpm-ostree rollback')
+        print out, err, eid
+        self.assertFalse(err)
+
+
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestAtomicRollbackPostReboot(unittest.TestCase):
+
+    def test_atomic_rollback_post_reboot(self):
+        out, err, eid = system('rpm-ostree status')
+        print out, err, eid
+        self.assertTrue(out)
+
+        out, err, eid = system('sudo cat /etc/file1')
+        print out, err, eid
+        self.assertTrue(out)
+
+        out, err, eid = system('sudo cat /etc/file2')
+        print out, err, eid
+        self.assertTrue(err)
+
+        out, err, eid = system(
+            'docker run -ti --rm busybox true && echo "PASS"')
+        print out, err, eid
+        self.assertEqual(out, 'PASS')
+
 if __name__ == '__main__':
     unittest.main()
