@@ -37,5 +37,41 @@ class TestDockerStorageSetup(unittest.TestCase):
         )
 
 
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestDockerInstalled(unittest.TestCase):
+
+    def test_success(self):
+        out, err, eid = system('rpm -q docker')
+        print out, err, eid
+        self.assertTrue('docker' in out)
+
+
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestAtomicUpgradeRun(unittest.TestCase):
+
+    def test_upgrade_run(self):
+        out, err, eid = system('sudo rpm-ostree status')
+        print out, err, eid
+        self.assertTrue(out)
+        out, err, eid = system('sudo ostree admin status')
+        print out, err, eid
+        self.assertTrue(out)
+        out, err, eid = system(
+            'sudo cat /ostree/repo/refs/heads/ostree/0/1/0 > /etc/file1')
+        self.assertFalse(err)
+        out, err, eid = system('sudo rpm-ostree upgrade')
+        print out, err, eid
+        self.assertFalse(err)
+
+
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestAtomicUpgradePostReboot(unittest.TestCase):
+
+    def test_upgrade_post_reboot(self):
+        out, err, eid = system(
+            'docker run -it --rm busybox true && echo "PASS"')
+        print out, err, eid
+        self.assertEquals('PASS', out)
+
 if __name__ == '__main__':
     unittest.main()
