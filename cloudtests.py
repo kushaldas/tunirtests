@@ -30,8 +30,8 @@ class TestBase(unittest.TestCase):
         "Tests package install using dnf"
         system('dnf install pss -y')
         out, err, eid = system('ls -l /usr/bin/pss')
-        out = out.decode('utf-8')
-        self.assertIn('root', out)
+        self.assertEqual(eid, 0, 'Can not find /usr/bin/pss')
+
 
 
 if __name__ == '__main__':
