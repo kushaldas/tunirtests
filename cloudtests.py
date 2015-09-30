@@ -30,7 +30,7 @@ class TestBase(unittest.TestCase):
         "Tests package install using dnf"
         system('dnf install pss -y')
         out, err, eid = system('ls -l /usr/bin/pss')
-        self.assertEqual(eid, 0, 'Can not find /usr/bin/pss')
+        self.assertEqual(eid, 0, err)
 
 
 
