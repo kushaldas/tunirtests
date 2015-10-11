@@ -1,6 +1,6 @@
 import unittest
 import re
-from testutils import system, if_atomic
+from .testutils import system, if_atomic
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
@@ -11,6 +11,7 @@ class TestDockerStorageSetup(unittest.TestCase):
         out, err, eid = system(
             'journalctl -o cat --unit docker-storage-setup.service'
         )
+        out = out.decode('utf-8')
         self.assertTrue(re.search(r'CHANGED: partition=\d', out))
         self.assertTrue(
             re.search(r'Physical volume "/dev/vd[a-z]\d" changed', out))
@@ -26,6 +27,7 @@ class TestDockerStorageSetup(unittest.TestCase):
     def test_lsblk_output(self):
         """Test output for lsblk"""
         out, err, eid = system('sudo lsblk')
+        out = out.decode('utf-8')
         self.assertTrue(
             re.search(r'atomicos-root.*\d+(?:.\d+)?G.*lvm.*/sysroot.*\n', out)
         )
@@ -42,6 +44,7 @@ class TestDockerInstalled(unittest.TestCase):
 
     def test_success(self):
         out, err, eid = system('rpm -q docker')
+        out = out.decode('utf-8')
         self.assertTrue('docker' in out)
 
 
@@ -50,13 +53,17 @@ class TestAtomicUpgradeRun(unittest.TestCase):
 
     def test_upgrade_run(self):
         out, err, eid = system('sudo rpm-ostree status')
+        out = out.decode('utf-8')
         self.assertTrue(out)
         out, err, eid = system('sudo ostree admin status')
+        out = out.decode('utf-8')
         self.assertTrue(out)
         out, err, eid = system(
             'sudo cat /ostree/repo/refs/heads/ostree/0/1/0 > /etc/file1')
+        err = err.decode('utf-8')
         self.assertFalse(err)
         out, err, eid = system('sudo rpm-ostree upgrade')
+        err = err.decode('utf-8')
         self.assertFalse(err)
 
 
@@ -66,6 +73,7 @@ class TestAtomicUpgradePostReboot(unittest.TestCase):
     def test_upgrade_post_reboot(self):
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
+        out = out.decode('utf-8')
         self.assertEquals('PASS\n', out)
 
 
@@ -75,9 +83,11 @@ class TestAtomicRollbackRun(unittest.TestCase):
     def test_atomic_rollback_run(self):
         out, err, eid = system(
             'sudo cat /ostree/repo/refs/heads/ostree/1/1/0 > /etc/file2')
+        err = err.decode('utf-8')
         self.assertFalse(err)
 
         out, err, eid = system('sudo rpm-ostree rollback')
+        err = err.decode('utf-8')
         self.assertFalse(err)
 
 
@@ -86,16 +96,20 @@ class TestAtomicRollbackPostReboot(unittest.TestCase):
 
     def test_atomic_rollback_post_reboot(self):
         out, err, eid = system('rpm-ostree status')
+        out = out.decode('utf-8')
         self.assertTrue(out)
 
         out, err, eid = system('sudo cat /etc/file1')
+        out = out.decode('utf-8')
         self.assertTrue(out)
 
         out, err, eid = system('sudo cat /etc/file2')
+        err = err.decode('utf-8')
         self.assertTrue(err)
 
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
+        out = out.decode('utf-8')
         self.assertEqual(out, 'PASS\n')
 
 
@@ -112,6 +126,7 @@ class TestAtomicDockerImage(unittest.TestCase):
         out, err, eid = system(
             'sudo docker run -it --rm Fedora-Docker-Base-22_TC1-20150428.x86'
             '_64 true && echo "PASS" || echo "FAIL"')
+        out = out.decode('utf-8')
         self.assertEqual(out, 'PASS\n')
 
 if __name__ == '__main__':
