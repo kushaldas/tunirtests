@@ -42,7 +42,6 @@ class TestDockerInstalled(unittest.TestCase):
 
     def test_success(self):
         out, err, eid = system('rpm -q docker')
-        print out, err, eid
         self.assertTrue('docker' in out)
 
 
@@ -51,16 +50,13 @@ class TestAtomicUpgradeRun(unittest.TestCase):
 
     def test_upgrade_run(self):
         out, err, eid = system('sudo rpm-ostree status')
-        print out, err, eid
         self.assertTrue(out)
         out, err, eid = system('sudo ostree admin status')
-        print out, err, eid
         self.assertTrue(out)
         out, err, eid = system(
             'sudo cat /ostree/repo/refs/heads/ostree/0/1/0 > /etc/file1')
         self.assertFalse(err)
         out, err, eid = system('sudo rpm-ostree upgrade')
-        print out, err, eid
         self.assertFalse(err)
 
 
@@ -70,7 +66,6 @@ class TestAtomicUpgradePostReboot(unittest.TestCase):
     def test_upgrade_post_reboot(self):
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
-        print out, err, eid
         self.assertEquals('PASS\n', out)
 
 
@@ -80,11 +75,9 @@ class TestAtomicRollbackRun(unittest.TestCase):
     def test_atomic_rollback_run(self):
         out, err, eid = system(
             'sudo cat /ostree/repo/refs/heads/ostree/1/1/0 > /etc/file2')
-        print out, err, eid
         self.assertFalse(err)
 
         out, err, eid = system('sudo rpm-ostree rollback')
-        print out, err, eid
         self.assertFalse(err)
 
 
@@ -93,20 +86,16 @@ class TestAtomicRollbackPostReboot(unittest.TestCase):
 
     def test_atomic_rollback_post_reboot(self):
         out, err, eid = system('rpm-ostree status')
-        print out, err, eid
         self.assertTrue(out)
 
         out, err, eid = system('sudo cat /etc/file1')
-        print out, err, eid
         self.assertTrue(out)
 
         out, err, eid = system('sudo cat /etc/file2')
-        print out, err, eid
         self.assertTrue(err)
 
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
-        print out, err, eid
         self.assertEqual(out, 'PASS\n')
 
 
@@ -117,15 +106,12 @@ class TestAtomicDockerImage(unittest.TestCase):
         out, err, eid = system(
             'curl -O https://dl.fedoraproject.org/pub/alt/stage/23_TC1/Docker'
             '/x86_64/Fedora-Docker-Base-23_TC1-20150929.x86_64.tar.xz')
-        print [out, err, eid]
         out, err, eid = system(
             'sudo docker load -i '
             'Fedora-Docker-Base-22_TC1-20150428.x86_64.tar.xz')
-        print [out, err, eid]
         out, err, eid = system(
             'sudo docker run -it --rm Fedora-Docker-Base-22_TC1-20150428.x86'
             '_64 true && echo "PASS" || echo "FAIL"')
-        print [out, err, eid]
         self.assertEqual(out, 'PASS\n')
 
 if __name__ == '__main__':
