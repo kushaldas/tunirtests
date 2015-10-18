@@ -1,6 +1,16 @@
 import unittest
 import re
-from .testutils import system, if_atomic
+from testutils import system, if_atomic
+
+
+@unittest.skipUnless(if_atomic(), "It's not an atomic image")
+class TestAtomicFirstBootRun(unittest.TestCase):
+
+    def test_docker_image_run(self):
+        out, err, eid = system(
+            'docker run --rm busybox true && echo "PASS"')
+        out = out.decode('utf-8')
+        self.assertEquals('PASS\n', out)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
