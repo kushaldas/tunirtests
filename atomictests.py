@@ -116,16 +116,17 @@ class TestAtomicRollbackPostReboot(unittest.TestCase):
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
 class TestAtomicDockerImage(unittest.TestCase):
 
-    def test_atomic_image(self):
+    def test_docker_image(self):
         out, err, eid = system(
             'curl -O https://dl.fedoraproject.org/pub/alt/stage/23_TC1/Docker'
             '/x86_64/Fedora-Docker-Base-23_TC1-20150929.x86_64.tar.xz')
         out, err, eid = system(
             'sudo docker load -i '
-            'Fedora-Docker-Base-22_TC1-20150428.x86_64.tar.xz')
+            'Fedora-Docker-Base-23_TC1-20150929.x86_64.tar.xz')
         out, err, eid = system(
-            'sudo docker run -it --rm Fedora-Docker-Base-22_TC1-20150428.x86'
-            '_64 true && echo "PASS" || echo "FAIL"')
+            'sudo docker run -it --rm '
+            'Fedora-Docker-Base-23_TC1-20150929.x86_64 '
+            'true && echo "PASS" || echo "FAIL"')
         out = out.decode('utf-8')
         self.assertEqual(out, 'PASS\n')
 
