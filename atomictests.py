@@ -1,6 +1,6 @@
 import unittest
 import re
-from testutils import system, if_atomic
+from .testutils import system, if_atomic
 
 
 @unittest.skipUnless(if_atomic(), "It's not an atomic image")
