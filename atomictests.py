@@ -1,5 +1,6 @@
 import unittest
 import re
+import time
 from .testutils import system, if_atomic
 
 
@@ -133,15 +134,11 @@ class TestAtomicRollbackPostReboot(unittest.TestCase):
 class TestAtomicDockerImage(unittest.TestCase):
 
     def test_docker_image(self):
+        out, err, eid = system('sudo docker pull fedora:latest')
+        self.assertFalse(err)
+        time.sleep(2)
         out, err, eid = system(
-            'curl -O https://dl.fedoraproject.org/pub/alt/stage/23_TC1/Docker'
-            '/x86_64/Fedora-Docker-Base-23_TC1-20150929.x86_64.tar.xz')
-        out, err, eid = system(
-            'sudo docker load -i '
-            'Fedora-Docker-Base-23_TC1-20150929.x86_64.tar.xz')
-        out, err, eid = system(
-            'sudo docker run -it --rm '
-            'Fedora-Docker-Base-23_TC1-20150929.x86_64 '
+            'sudo docker run --rm fedora:latest '
             'true && echo "PASS" || echo "FAIL"')
         out = out.decode('utf-8')
         self.assertEqual(out, 'PASS\n')
