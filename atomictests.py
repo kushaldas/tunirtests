@@ -1,5 +1,6 @@
 import unittest
 import re
+import time
 from .testutils import system, if_atomic
 
 
@@ -22,17 +23,11 @@ class TestDockerStorageSetup(unittest.TestCase):
             'journalctl -o cat --unit docker-storage-setup.service'
         )
         out = out.decode('utf-8')
-        self.assertTrue(re.search(r'CHANGED: partition=\d', out))
         self.assertTrue(
-            re.search(r'Physical volume "/dev/vd[a-z]\d" changed', out))
-        self.assertTrue('1 physical volume(s) resized' in out)
-        self.assertTrue(
-            'Size of logical volume atomicos/root changed from' in out)
-        self.assertTrue(
-            'Logical volume root successfully resized' in out)
-        self.assertTrue('Rounding up size to full physical extent' in out)
-        self.assertTrue('Logical volume "docker-meta" created' in out)
-        self.assertTrue('Logical volume "docker-data" created' in out)
+            'Starting Docker Storage Setup...\n'
+            'Logical volume "docker-pool" changed.\n'
+            'Started Docker Storage Setup.' in out
+        )
 
     def test_lsblk_output(self):
         """Test output for lsblk"""
@@ -42,10 +37,10 @@ class TestDockerStorageSetup(unittest.TestCase):
             re.search(r'atomicos-root.*\d+(?:.\d+)?G.*lvm.*/sysroot.*\n', out)
         )
         self.assertTrue(
-            re.search(r'atomicos-docker--meta.*\d+(?:.\d+)?M.*lvm', out)
+            re.search(r'atomicos-docker--pool_tmeta.*\d+(?:.\d+)?M.*lvm', out)
         )
         self.assertTrue(
-            re.search(r'atomicos-docker--data.*\d+(?:.\d+)?G.*lvm', out)
+            re.search(r'atomicos-docker--pool_tdata.*\d+(?:.\d+)?G.*lvm', out)
         )
 
 
@@ -139,15 +134,11 @@ class TestAtomicRollbackPostReboot(unittest.TestCase):
 class TestAtomicDockerImage(unittest.TestCase):
 
     def test_docker_image(self):
+        out, err, eid = system('sudo docker pull fedora:latest')
+        self.assertFalse(err)
+        time.sleep(2)
         out, err, eid = system(
-            'curl -O https://dl.fedoraproject.org/pub/alt/stage/23_TC1/Docker'
-            '/x86_64/Fedora-Docker-Base-23_TC1-20150929.x86_64.tar.xz')
-        out, err, eid = system(
-            'sudo docker load -i '
-            'Fedora-Docker-Base-23_TC1-20150929.x86_64.tar.xz')
-        out, err, eid = system(
-            'sudo docker run -it --rm '
-            'Fedora-Docker-Base-23_TC1-20150929.x86_64 '
+            'sudo docker run --rm fedora:latest '
             'true && echo "PASS" || echo "FAIL"')
         out = out.decode('utf-8')
         self.assertEqual(out, 'PASS\n')
