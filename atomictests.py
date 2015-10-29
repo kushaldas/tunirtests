@@ -143,5 +143,13 @@ class TestAtomicDockerImage(unittest.TestCase):
         out = out.decode('utf-8')
         self.assertEqual(out, 'PASS\n')
 
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestAtomicCommand(unittest.TestCase):
+
+    def test_atomic_command(self):
+        out, err, eid = system('sudo atomic run busybox')
+        self.assertEqual(eid, 0, out+err)
+
+
 if __name__ == '__main__':
     unittest.main()

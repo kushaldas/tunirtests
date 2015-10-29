@@ -4,22 +4,20 @@ sudo python3 -m unittest tunirtests.cloudtests -v
 sudo systemctl stop crond.service
 @@ sudo systemctl disable crond.service
 @@ sudo reboot
-SLEEP 30
+SLEEP 60
 sudo python3 -m unittest tunirtests.cloudservice.TestServiceManipulation -v
 @@ sudo reboot
-SLEEP 30
+SLEEP 60
 sudo python3 -m unittest tunirtests.cloudservice.TestServiceAfter -v
-
+sudo python3 -m unittest tunirtests.atomictests.TestAtomicCommand
 sudo python3 -m unittest tunirtests.atomictests.TestDockerInstalled -v
 sudo python3 -m unittest tunirtests.atomictests.TestDockerStorageSetup -v
 sudo python3 -m unittest tunirtests.atomictests.TestAtomicUpgradeRun -v
-
 @@ sudo reboot
-SLEEP 30
+SLEEP 60
 sudo python3 -m unittest tunirtests.atomictests.TestAtomicUpgradePostReboot
 sudo python3 -m unittest tunirtests.atomictests.TestAtomicRollbackRun
-
 @@ sudo reboot
-SLEEP 30
+SLEEP 60
 sudo python3 -m unittest tunirtests.atomictests.TestAtomicRollbackPostReboot
 sudo python3 -m unittest tunirtests.atomictests.TestAtomicDockerImage
