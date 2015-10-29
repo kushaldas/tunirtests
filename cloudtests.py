@@ -18,7 +18,6 @@ class TestBase(unittest.TestCase):
         out = out.decode('utf-8')
         self.assertGreater(len(out.split()), 3, "journalctl output is missing.")
 
-    @unittest.skipIf(if_atomic(), "It is an Atomic image.")
     def test_services(self):
         "No service should fail in the startup."
         out, err, eid = system('systemctl --all --failed')
