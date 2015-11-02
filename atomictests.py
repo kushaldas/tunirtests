@@ -156,6 +156,14 @@ class TestAtomicCommand(unittest.TestCase):
         out, err, eid = system('atomic run busybox')
         self.assertEqual(eid, 0, out+err)
 
+# https://github.com/kushaldas/tunirtests/issues/8
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestRootMount(unittest.TestCase):
+
+    def test_root_mount(self):
+        out, err, eid = system('docker run --rm -v /:/host busybox')
+        self.assertEqual(eid, 0, out+err)
+
 
 if __name__ == '__main__':
     unittest.main()
