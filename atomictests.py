@@ -23,10 +23,9 @@ class TestDockerStorageSetup(unittest.TestCase):
             'journalctl -o cat --unit docker-storage-setup.service'
         )
         out = out.decode('utf-8')
+        print(repr(out))
         self.assertTrue(
-            'Starting Docker Storage Setup...\n'
-            'Logical volume "docker-pool" changed.\n'
-            'Started Docker Storage Setup.' in out
+            'Started Docker Storage Setup.' in out, out
         )
 
     def test_lsblk_output(self):
@@ -62,6 +61,7 @@ class TestAtomicUpgradeRun(unittest.TestCase):
         self.assertTrue(out)
         out, err, eid = system('sudo ostree admin status')
         out = out.decode('utf-8')
+        print(out, err)
         self.assertTrue(out)
 
         # We create a file /etc/file1 before running rpm-ostree upgrade.
@@ -71,11 +71,14 @@ class TestAtomicUpgradeRun(unittest.TestCase):
         out, err, eid = system(
             'sudo cat /ostree/repo/refs/heads/ostree/0/1/0 > /etc/file1')
         err = err.decode('utf-8')
+        print(out, err)
         self.assertFalse(err)
         out, err, eid = system('sudo rpm-ostree upgrade')
         err = err.decode('utf-8')
         # Assert successful run
+        print(out, err)
         self.assertFalse(err)
+        time.sleep(30)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
@@ -99,10 +102,13 @@ class TestAtomicRollbackRun(unittest.TestCase):
             'sudo cat /ostree/repo/refs/heads/ostree/1/1/0 > /etc/file2')
         err = err.decode('utf-8')
         self.assertFalse(err)
+        print(out, err)
 
         out, err, eid = system('sudo rpm-ostree rollback')
         err = err.decode('utf-8')
         self.assertFalse(err)
+        print(out, err)
+        time.sleep(30)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
@@ -136,7 +142,7 @@ class TestAtomicDockerImage(unittest.TestCase):
     def test_docker_image(self):
         out, err, eid = system('sudo docker pull fedora:latest')
         self.assertFalse(err)
-        time.sleep(2)
+        time.sleep(10)
         out, err, eid = system(
             'sudo docker run --rm fedora:latest '
             'true && echo "PASS" || echo "FAIL"')
@@ -147,7 +153,7 @@ class TestAtomicDockerImage(unittest.TestCase):
 class TestAtomicCommand(unittest.TestCase):
 
     def test_atomic_command(self):
-        out, err, eid = system('sudo atomic run busybox')
+        out, err, eid = system('atomic run busybox')
         self.assertEqual(eid, 0, out+err)
 
 
