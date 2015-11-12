@@ -3,6 +3,7 @@ import re
 import os
 from .testutils import system
 
+
 class TunirNonGatingtests(unittest.TestCase):
 
     def test_bash(self):
@@ -10,6 +11,58 @@ class TunirNonGatingtests(unittest.TestCase):
         out, err, eid = system('bash --version')
         out = out.decode('utf-8')
         self.assertIn("-redhat-linux-gnu", out, out)
+
+
+class TunirNonGatingtestsCpio(unittest.TestCase):
+
+    def setUp(self):
+        """Recording the current working directory"""
+        self.current_working_directory = os.getcwd()
+
+    def test_cpio(self):
+        """Tests to check basic cpio functions"""
+
+        outdir = '/var/tmp/cpio/cpio_out'
+        indir = '/var/tmp/cpio/cpio_in'
+        passdir = '/var/tmp/cpio/cpio_pass'
+
+        if os.path.exists('/var/tmp/cpio'):
+            system('rm -rf /var/tmp/cpio')
+
+        system('mkdir -p %s' % outdir)
+        system('mkdir -p %s' % indir)
+        system('mkdir -p %s' % passdir)
+
+        # Basic copy out test
+        out, err, eid = system('ls | cpio -o > %s/cpio.out' % outdir)
+        out = out.decode('utf-8')
+        err = err.decode('utf-8')
+        self.assertEqual(eid, 0, out+err)
+
+        # Basic copy in test
+        os.chdir(indir)
+        out, err, eid = system('cpio -i < %s/cpio.out' % outdir)
+        out = out.decode('utf-8')
+        err = err.decode('utf-8')
+        self.assertEqual(eid, 0, out+err)
+
+        # Basic pass through test
+        os.chdir(indir)
+        out, err, eid = system('find . | cpio -pd %s' % passdir)
+        out = out.decode('utf-8')
+        err = err.decode('utf-8')
+        self.assertEqual(eid, 0, out+err)
+
+        # Check that the working directories are the same
+        out, err, eid = system('diff %s %s &>/dev/null' % (passdir, indir))
+        out = out.decode('utf-8')
+        err = err.decode('utf-8')
+        self.assertEqual(eid, 0, out+err)
+
+    def tearDown(self):
+        """Returning to present directory"""
+        os.chdir(self.current_working_directory)
+
 
 class TunirNonGatingtestBzip2(unittest.TestCase):
 
