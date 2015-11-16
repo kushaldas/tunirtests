@@ -62,7 +62,6 @@ class TunirNonGatingtestfile(unittest.TestCase):
 
         pngfile = '/usr/share/anaconda/boot/syslinux-splash.png'
         testfilepath = '/tmp/p_file_link_test'
-        mimetype = 'inode/symlink'
 
         #Checks if file package is installed
         out, err, eid = system('rpm -q file')
@@ -73,14 +72,12 @@ class TunirNonGatingtestfile(unittest.TestCase):
         #Checks if file can recognize mime executable type
         out, err, eid = system('file /bin/bash -i')
         out = out.decode('utf-8')
-        err = err.decode('utf-8')
-        self.assertEqual(eid, 0, out+err)
+        self.assertIn('application/x-sharedlib', out, out)
 
         #Checks if file can recognize image mime file type
-        out, err, eid = system("file %s -i | grep -q 'image/png'" % pngfile)
+        out, err, eid = system('file %s -i' % pngfile)
         out = out.decode('utf-8')
-        err = err.decode('utf-8')
-        self.assertEqual(eid, 0, out+err)
+        self.assertIn('image/png', out, out)
 
         #Checks if file can recognize symlink mime file type
         out, err, eid = system('ln -s /etc/hosts %s' % testfilepath)
@@ -88,15 +85,9 @@ class TunirNonGatingtestfile(unittest.TestCase):
         err = err.decode('utf-8')
         self.assertEqual(eid, 0, out+err)
 
-        out, err, eid = system('file -i %s | grep -q %s' % (testfilepath, mimetype))
+        out, err, eid = system('file -i %s' % testfilepath)
         out = out.decode('utf-8')
-        err = err.decode('utf-8')
-        self.assertEqual(eid, 0, out+err)
-
-        out, err, eid = system('ret_val=$?')
-        out = out.decode('utf-8')
-        err = err.decode('utf-8')
-        self.assertEqual(eid, 0, out+err)
+        self.assertIn('inode/symlink', out, out)
 
     def tearDown(self):
         """Deletes the symlink created for test"""
