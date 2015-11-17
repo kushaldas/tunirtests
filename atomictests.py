@@ -1,4 +1,5 @@
 import unittest
+import os
 import re
 import time
 from .testutils import system, if_atomic
@@ -174,6 +175,17 @@ class Testtmpmount(unittest.TestCase):
         out = out.decode('utf-8')
         self.assertEqual(out.strip(), '777')
 
+# https://github.com/kushaldas/tunirtests/issues/17
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class Testreadonlymount(unittest.TestCase):
+
+    def test_read_only(self):
+        "Tests the read only dirs."
+        dirs = [ '/bin/','/sbin/', '/usr/']
+        for d in dirs:
+            with self.assertRaises(OSError):
+                with open(os.path.join(d, 'hooha.txt'), 'w') as fobj:
+                    fobj.write('hello.')
 
 if __name__ == '__main__':
     unittest.main()
