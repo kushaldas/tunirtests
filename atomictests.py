@@ -187,5 +187,15 @@ class Testreadonlymount(unittest.TestCase):
                 with open(os.path.join(d, 'hooha.txt'), 'w') as fobj:
                     fobj.write('hello.')
 
+# https://github.com/kushaldas/tunirtests/issues/17
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class TestDockerDaemon(unittest.TestCase):
+
+    def test_docker(self):
+        out, err, eid = system('docker run --rm  --privileged -v /run:/run -v /:/host --net=host --entrypoint=/bin/bash fedora:23 -c "chroot /host/ docker version"')
+        self.assertEqual(eid, 0, out+err)
+        out = out.decode('utf-8')
+        self.assertIn('Server version', out)
+
 if __name__ == '__main__':
     unittest.main()
