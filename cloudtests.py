@@ -31,6 +31,16 @@ class TestBase(unittest.TestCase):
         out, err, eid = system('ls -l /usr/bin/pss')
         self.assertEqual(eid, 0, err)
 
+# https://github.com/kushaldas/tunirtests/issues/17
+class TestCloudtmp(unittest.TestCase):
+    "/tmp should always be writable."
+
+    def test_write_tmp(self):
+        "/tmp should always be writable."
+        with open('/tmp/hoo-ha.txt', 'w') as fobj:
+            fobj.write("Hello")
+
+
 
 
 if __name__ == '__main__':

@@ -164,6 +164,16 @@ class TestRootMount(unittest.TestCase):
         out, err, eid = system('docker run --rm -v /:/host busybox')
         self.assertEqual(eid, 0, out+err)
 
+# https://github.com/kushaldas/tunirtests/issues/17
+@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+class Testtmpmount(unittest.TestCase):
+
+    def test_tmp_mount(self):
+        out, err, eid = system("stat -c '%a' /tmp")
+        self.assertEqual(eid, 0, out+err)
+        out = out.decode('utf-8')
+        self.assertEqual(out.strip(), '777')
+
 
 if __name__ == '__main__':
     unittest.main()
