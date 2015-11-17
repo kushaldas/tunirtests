@@ -146,5 +146,17 @@ class TunirNonGatingtestfile(unittest.TestCase):
         """Deletes the symlink created for test"""
         os.remove('/tmp/p_file_link_test')
 
+class TunirNonGatingtestcurl(unittest.TestCase):
+
+    def test_curl(self):
+        """Tests that curl can access http-host and retrieve index.html"""
+
+        URL = "http://fedoraproject.org"
+
+        #Querying url
+        out, err, eid = system('curl --location -s %s' % URL)
+        out = out.decode('utf-8')
+        self.assertIn('Fedora', out)
+
 if __name__ == '__main__':
     unittest.main()
