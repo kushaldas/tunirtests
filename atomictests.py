@@ -50,7 +50,7 @@ class TestDockerInstalled(unittest.TestCase):
     def test_run(self):
         out, err, eid = system('rpm -q docker')
         out = out.decode('utf-8')
-        self.assertTrue('docker' in out)
+        self.assertFalse('not installed' in out, out)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
