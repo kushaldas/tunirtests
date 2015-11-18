@@ -167,16 +167,6 @@ class TestRootMount(unittest.TestCase):
 
 # https://github.com/kushaldas/tunirtests/issues/17
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-class Testtmpmount(unittest.TestCase):
-
-    def test_tmp_mount(self):
-        out, err, eid = system("stat -c '%a' /tmp")
-        self.assertEqual(eid, 0, out+err)
-        out = out.decode('utf-8')
-        self.assertEqual(out.strip(), '777')
-
-# https://github.com/kushaldas/tunirtests/issues/17
-@unittest.skipUnless(if_atomic(), "It's not an Atomic image")
 class Testreadonlymount(unittest.TestCase):
 
     def test_read_only(self):

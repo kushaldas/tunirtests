@@ -40,6 +40,16 @@ class TestCloudtmp(unittest.TestCase):
         with open('/tmp/hoo-ha.txt', 'w') as fobj:
             fobj.write("Hello")
 
+# https://github.com/kushaldas/tunirtests/issues/17
+class Testtmpmount(unittest.TestCase):
+
+    def test_tmp_mount(self):
+        out, err, eid = system("stat -L -c '%a' /tmp")
+        self.assertEqual(eid, 0, out+err)
+        out = out.decode('utf-8')
+        self.assertEqual(out.strip(), '1777')
+
+
 
 
 
