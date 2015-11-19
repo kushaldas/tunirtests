@@ -158,5 +158,37 @@ class TunirNonGatingtestcurl(unittest.TestCase):
         out = out.decode('utf-8')
         self.assertIn('Fedora', out)
 
+class TunirNonGatingtestaudit(unittest.TestCase):
+
+    def test_audit(self):
+        """Tests audit"""
+
+        audit_log = '/var/log/audit/audit.log'
+
+        #Checks if audit is installed
+        out, err, eid = system('rpm -q audit')
+        out = out.decode('utf-8')
+        err = err.decode('utf-8')
+        self.assertEqual(eid, 0, out+err)
+
+        #Checks if auditd is running
+        out, err, eid = system('systemctl status auditd')
+        out = out.decode('utf-8')
+        self.assertIn('active', out, out)
+
+        #Generates some events for audit log
+        out, err, eid = system('useradd testauditd')
+        out, err, eid = system('userdel testauditd')
+        out = out.decode('utf-8')
+        err = err.decode('utf-8')
+        self.assertEqual(eid, 0, out+err)
+
+        #Checks if the right logs are in the file"
+        with open(audit_log, 'r') as fobj:
+            f = fobj.read()
+            self.assertIn('useradd', f)
+            self.assertIn('userdel', f)
+            self.assertIn('testauditd', f)
+
 if __name__ == '__main__':
     unittest.main()
