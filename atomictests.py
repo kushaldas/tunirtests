@@ -1,4 +1,4 @@
-import unittest
+mport unittest
 import os
 import re
 import time
@@ -12,7 +12,7 @@ class TestAtomicFirstBootRun(unittest.TestCase):
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
         out = out.decode('utf-8')
-        self.assertEquals('PASS\n', out)
+        self.assertEqual('PASS\n', out)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
@@ -57,7 +57,7 @@ class TestDockerInstalled(unittest.TestCase):
 class TestAtomicUpgradeRun(unittest.TestCase):
 
     def test_upgrade_run(self):
-        out, err, eid = system('sudo rpm-ostree status')
+        out, err, eid = system('sudo atomic host status')
         out = out.decode('utf-8')
         self.assertTrue(out)
         out, err, eid = system('sudo ostree admin status')
@@ -74,7 +74,7 @@ class TestAtomicUpgradeRun(unittest.TestCase):
         err = err.decode('utf-8')
         print(out, err)
         self.assertFalse(err)
-        out, err, eid = system('sudo rpm-ostree upgrade')
+        out, err, eid = system('sudo atomic host upgrade')
         err = err.decode('utf-8')
         # Assert successful run
         print(out, err)
@@ -89,7 +89,7 @@ class TestAtomicUpgradePostReboot(unittest.TestCase):
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
         out = out.decode('utf-8')
-        self.assertEquals('PASS\n', out)
+        self.assertEqual('PASS\n', out)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
@@ -105,7 +105,7 @@ class TestAtomicRollbackRun(unittest.TestCase):
         self.assertFalse(err)
         print(out, err)
 
-        out, err, eid = system('sudo rpm-ostree rollback')
+        out, err, eid = system('sudo atomic host rollback')
         err = err.decode('utf-8')
         self.assertFalse(err)
         print(out, err)
@@ -116,7 +116,7 @@ class TestAtomicRollbackRun(unittest.TestCase):
 class TestAtomicRollbackPostReboot(unittest.TestCase):
 
     def test_atomic_rollback_post_reboot(self):
-        out, err, eid = system('rpm-ostree status')
+        out, err, eid = system('atomic host status')
         out = out.decode('utf-8')
         self.assertTrue(out)
 

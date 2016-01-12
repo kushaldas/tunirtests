@@ -10,7 +10,7 @@ class TestBase(unittest.TestCase):
         out, err, eid = system('sudo getenforce')
         out = out.strip()
         out = out.decode('utf-8')
-        self.assertEquals(out, 'Enforcing')
+        self.assertEqual(out, 'Enforcing')
 
     def test_logging(self):
         "Tests journald logging"
