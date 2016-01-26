@@ -18,3 +18,12 @@ def if_atomic():
     if eid != 0:
         return False
     return True
+
+def if_netname_traditional():
+    "Identify classic network interface naming convention"
+    out, err, eid = system('cat /proc/cmdline')
+    out = out.decode('utf-8')
+    print(repr(out))
+    if "net.ifnames=0" in out:
+        return True
+    return False
