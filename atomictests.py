@@ -62,7 +62,7 @@ class TestAtomicUpgradeRun(unittest.TestCase):
         # This file should persist, even after rolling back the upgrade.
         # This we assert in
         # TestAtomicRollbackPostReboot.test_atomic_rollback_post_reboot
-        with open('/etc/file1', '') as f:
+        with open('/etc/file1', 'w') as f:
             f.write('1')
             f.close
 
@@ -93,7 +93,7 @@ class TestAtomicRollbackRun(unittest.TestCase):
         # We make changes to the system by creating /etc/file2 before
         # running rollback. Once rollback is run, /etc/file2 will be
         # removed. We assert that in the following test case.
-        with open('/etc/file2', '') as f:
+        with open('/etc/file2', 'w') as f:
             f.write('2')
             f.close
 
