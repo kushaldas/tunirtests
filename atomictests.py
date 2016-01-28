@@ -63,7 +63,7 @@ class TestAtomicUpgradeRun(unittest.TestCase):
         # This we assert in
         # TestAtomicRollbackPostReboot.test_atomic_rollback_post_reboot
         with open('/etc/file1', 'w') as f:
-            f.write('1')
+            f.write('1\n')
             f.close
 
         out, err, eid = system('sudo atomic host upgrade')
@@ -94,7 +94,7 @@ class TestAtomicRollbackRun(unittest.TestCase):
         # running rollback. Once rollback is run, /etc/file2 will be
         # removed. We assert that in the following test case.
         with open('/etc/file2', 'w') as f:
-            f.write('2')
+            f.write('2\n')
             f.close
 
         out, err, eid = system('sudo atomic host rollback')
