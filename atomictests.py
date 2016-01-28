@@ -2,7 +2,7 @@ import unittest
 import os
 import re
 import time
-from .testutils import system, if_atomic
+from .testutils import system, if_atomic, if_upgrade
 
 
 @unittest.skipUnless(if_atomic(), "It's not an atomic image")
@@ -54,7 +54,7 @@ class TestDockerInstalled(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-@unittest.skipUnless(if_upgradeble(), "No upgrade is available for this Atomic host")
+@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
 class TestAtomicUpgradeRun(unittest.TestCase):
 
     def test_upgrade_run(self):
@@ -75,7 +75,7 @@ class TestAtomicUpgradeRun(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-@unittest.skipUnless(if_upgradeble(), "No upgrade is available for this Atomic host")
+@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
 class TestAtomicUpgradePostReboot(unittest.TestCase):
 
     def test_upgrade_post_reboot(self):
@@ -86,7 +86,7 @@ class TestAtomicUpgradePostReboot(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-@unittest.skipUnless(if_upgradeble(), "No upgrade is available for this Atomic host")
+@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
 class TestAtomicRollbackRun(unittest.TestCase):
 
     def test_atomic_rollback_run(self):
@@ -96,7 +96,7 @@ class TestAtomicRollbackRun(unittest.TestCase):
         with open('/etc/file2', '') as f:
             f.write('2')
             f.close
-            
+
         out, err, eid = system('sudo atomic host rollback')
         err = err.decode('utf-8')
         self.assertFalse(err)
@@ -105,7 +105,7 @@ class TestAtomicRollbackRun(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-@unittest.skipUnless(if_upgradeble(), "No upgrade is available for this Atomic host")
+@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
 class TestAtomicRollbackPostReboot(unittest.TestCase):
 
     def test_atomic_rollback_post_reboot(self):
