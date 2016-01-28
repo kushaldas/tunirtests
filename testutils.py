@@ -18,3 +18,11 @@ def if_atomic():
     if eid != 0:
         return False
     return True
+
+
+def if_upgradeble():
+    "Check for available ostree upgrade for host."
+    out, err, eid = system('sudo atomic host upgrade --check')
+    if eid != 0:
+        return False
+    return True
