@@ -27,3 +27,14 @@ def if_netname_traditional():
     if "net.ifnames=0" in out:
         return True
     return False
+
+
+def if_vagrant():
+    "Checks if system has vagrant user"
+    with open('/etc/passwd', 'r') as fobj:
+        for line in fobj:
+            if '/bin/bash' in line:
+                user = line.split(':')[0]
+                if 'vagrant' in user:
+                    return True
+    return False
