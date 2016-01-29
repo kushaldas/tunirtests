@@ -86,7 +86,7 @@ class TestAtomicUpgradePostReboot(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
+@unittest.skipUnless(if_rollback(), "No rollback is available for this Atomic host")
 class TestAtomicRollbackRun(unittest.TestCase):
 
     def test_atomic_rollback_run(self):
@@ -105,7 +105,7 @@ class TestAtomicRollbackRun(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
+@unittest.skipUnless(if_rollback(), "No rollback is available for this Atomic host")
 class TestAtomicRollbackPostReboot(unittest.TestCase):
 
     def test_atomic_rollback_post_reboot(self):

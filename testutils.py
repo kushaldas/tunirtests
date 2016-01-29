@@ -19,10 +19,16 @@ def if_atomic():
         return False
     return True
 
-
 def if_upgrade():
     "Check for available ostree upgrade for host."
     out, err, eid = system('sudo atomic host upgrade --check')
     if eid != 0:
         return False
     return True
+
+def if_rollback():
+    "Check for available rollback target for host."
+    out, err, eid = system('sudo atomic host status -p')
+    if "ROLLBACK TARGET" in out:
+        return True
+    return False
