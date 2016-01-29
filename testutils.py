@@ -29,6 +29,7 @@ def if_upgrade():
 def if_rollback():
     "Check for available rollback target for host."
     out, err, eid = system('sudo atomic host status -p')
+    out = out.decode('utf-8')
     if "ROLLBACK TARGET" in out:
         return True
     return False

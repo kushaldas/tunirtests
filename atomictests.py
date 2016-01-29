@@ -75,7 +75,7 @@ class TestAtomicUpgradeRun(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
-@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
+@unittest.skipUnless(if_rollback(), "No rollback is available for this Atomic host")
 class TestAtomicUpgradePostReboot(unittest.TestCase):
 
     def test_upgrade_post_reboot(self):
@@ -114,10 +114,10 @@ class TestAtomicRollbackPostReboot(unittest.TestCase):
         self.assertTrue(out)
 
         # Assert that file1 is present
-        self.assertTrue(path.isfile('/etc/file1'))
+        self.assertTrue(os.path.isfile('/etc/file1'))
 
         # Assert that file2 is not present
-        self.assertFalse(path.isfile('/etc/file2'))
+        self.assertFalse(os.path.isfile('/etc/file2'))
 
         # Assert that running busybox docker image works after rollback
         out, err, eid = system(
