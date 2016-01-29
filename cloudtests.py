@@ -1,5 +1,5 @@
 import unittest
-from .testutils import system, if_atomic
+from .testutils import system, if_atomic, if_netname_traditional
 
 
 class TestBase(unittest.TestCase):
@@ -49,8 +49,13 @@ class Testtmpmount(unittest.TestCase):
         out = out.decode('utf-8')
         self.assertEqual(out.strip(), '1777')
 
-
-
+# https://github.com/kushaldas/tunirtests/issues/29
+@unittest.skipIf(not if_netname_traditional(), "Image is using predictable naming convention.")
+class Testnetname(unittest.TestCase):
+    "If traditional net naming is turned on, we should see eth0 structures here"
+    def test_net_name(self):
+        out, err, eid = system("stat /sys/class/net/eth0/operstate")
+        self.assertEqual(eid, 0, err)
 
 
 if __name__ == '__main__':

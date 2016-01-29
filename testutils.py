@@ -19,6 +19,16 @@ def if_atomic():
         return False
     return True
 
+def if_netname_traditional():
+    "Identify classic network interface naming convention"
+    out, err, eid = system('cat /proc/cmdline')
+    out = out.decode('utf-8')
+    print(repr(out))
+    if "net.ifnames=0" in out:
+        return True
+    return False
+
+
 def if_upgrade():
     "Check for available ostree upgrade for host."
     out, err, eid = system('sudo atomic host upgrade --check')
