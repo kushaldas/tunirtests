@@ -2,7 +2,7 @@ import unittest
 import os
 import re
 import time
-from .testutils import system, if_atomic, if_upgrade
+from .testutils import system, if_atomic, if_upgrade, if_rollback
 
 
 @unittest.skipUnless(if_atomic(), "It's not an atomic image")
