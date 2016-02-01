@@ -1,7 +1,7 @@
 import unittest
 import re
 import os
-from .testutils import system
+from .testutils import system, if_atomic
 
 
 class TunirNonGatingtests(unittest.TestCase):
@@ -181,6 +181,7 @@ class TunirNonGatingtestBzip2(unittest.TestCase):
         os.remove('/var/tmp/bzip2-test.txt')
 
 
+@unittest.skipUnless(if_atomic(), "It's not an atomic image")
 class TunirNonGatingtestfile(unittest.TestCase):
 
     def test_file(self):
@@ -217,7 +218,7 @@ class TunirNonGatingtestfile(unittest.TestCase):
 
     def tearDown(self):
         """Deletes the symlink created for test"""
-        os.remove('/tmp/p_file_link_test')
+        system('rm /tmp/p_file_link_test')
 
 
 class TunirNonGatingtestcurl(unittest.TestCase):

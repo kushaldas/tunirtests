@@ -28,6 +28,15 @@ def if_netname_traditional():
         return True
     return False
 
+def if_vagrant():
+    "Checks if system has vagrant user"
+    with open('/etc/passwd', 'r') as fobj:
+        for line in fobj:
+            if '/bin/bash' in line:
+                user = line.split(':')[0]
+                if 'vagrant' in user:
+                    return True
+    return False
 
 def if_upgrade():
     "Check for available ostree upgrade for host."
