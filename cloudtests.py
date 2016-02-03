@@ -1,4 +1,5 @@
 import unittest
+import re
 from .testutils import system, if_atomic, if_netname_traditional
 
 
@@ -56,6 +57,17 @@ class Testnetname(unittest.TestCase):
     def test_net_name(self):
         out, err, eid = system("stat /sys/class/net/eth0/operstate")
         self.assertEqual(eid, 0, err)
+
+
+class TestJournalWritten(unittest.TestCase):
+
+    def test_journal_written(self):
+        """Test to check if journal gets written to disk"""
+
+        out, err, eid = system("sudo ls -l /proc/$(pgrep journal)/fd/ | grep journal")
+        out = out.decode('utf-8')
+        self.assertIn('system.journal', out)
+        self.assertTrue(re.search('user-.*.journal', out))
 
 
 if __name__ == '__main__':
