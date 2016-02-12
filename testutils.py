@@ -14,7 +14,7 @@ def system(cmd):
 
 def if_atomic():
     "Tries to identify atomic image."
-    out, err, eid = system('which rpm-ostree')
+    out, err, eid = system('stat /run/ostree-booted')
     if eid != 0:
         return False
     return True
