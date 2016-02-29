@@ -185,7 +185,7 @@ class TestDockerDaemon(unittest.TestCase):
         out, err, eid = system('docker run --rm  --privileged -v /run:/run -v /:/host --net=host --entrypoint=/bin/bash fedora:23 -c "chroot /host/ docker version"')
         self.assertEqual(eid, 0, out+err)
         out = out.decode('utf-8')
-        self.assertIn('Server version', out)
+        self.assertIn('Server:\n Version', out)
 
 if __name__ == '__main__':
     unittest.main()
