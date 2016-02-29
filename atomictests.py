@@ -165,7 +165,6 @@ class TestRootMount(unittest.TestCase):
         out, err, eid = system('docker run --rm -v /:/host busybox')
         self.assertEqual(eid, 0, out+err)
 
-# https://github.com/kushaldas/tunirtests/issues/17
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
 class Testreadonlymount(unittest.TestCase):
 
@@ -177,7 +176,6 @@ class Testreadonlymount(unittest.TestCase):
                 with open(os.path.join(d, 'hooha.txt'), 'w') as fobj:
                     fobj.write('hello.')
 
-# https://github.com/kushaldas/tunirtests/issues/17
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
 class TestDockerDaemon(unittest.TestCase):
 
