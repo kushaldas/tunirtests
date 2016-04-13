@@ -64,8 +64,12 @@ class TestJournalWritten(unittest.TestCase):
     def test_journal_written(self):
         """Test to check if journal gets written to disk"""
 
-        out, err, eid = system("sudo ls -l /proc/$(pgrep journal)/fd/ | grep journal")
+        out, err, eid = system("systemctl show systemd-journald.service -p MainPID")
         out = out.decode('utf-8')
+        pid = out[8:-1]
+        out, err, eid = system("sudo ls -l /proc/{0}/fd/ | grep journal".format(pid))
+        out = out.decode('utf-8')
+        err = err.decode('utf-8')
         self.assertIn('system.journal', out)
         self.assertTrue(re.search('user-.*.journal', out))
 
