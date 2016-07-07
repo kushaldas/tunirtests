@@ -60,12 +60,15 @@ class Testnetname(unittest.TestCase):
 
 
 class TestJournalWritten(unittest.TestCase):
+    """
+    Test to check that journal logs get written to disk(/var)
+    and make sure that user-uid.journal is not lost on first boot
+    the test should run on First Boot
+    https://github.com/kushaldas/tunirtests/issues/28
+    https://github.com/kushaldas/tunirtests/issues/48
+    """
 
     def test_journal_written(self):
-        """
-        Test to check if journal gets written to disk
-        And make sure that journal logs get written to /var
-        """
 
         # Find PID
         out, err, eid = system("systemctl show systemd-journald.service -p MainPID")
@@ -88,8 +91,13 @@ class TestJournalWritten(unittest.TestCase):
             mid = f.read().strip('\n')
 
         self.assertIn('/var/log/journal/{0}/system.journal'.format(mid), out)
-        self.assertTrue(re.search('user-.*.journal', out))
         self.assertIn('/var/log/journal/{0}/user-{1}.journal'.format(mid, uid), out)
+
+class TestJournalWrittenAfterReboot(unittest.TestCase):
+    "This test executes the same test TestJournalWritten but After Reboot"
+
+    def test_journal_written_after_reboot(self):
+        TestJournalWritten.test_journal_written(self)
 
 
 if __name__ == '__main__':
