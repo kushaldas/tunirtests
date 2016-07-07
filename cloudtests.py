@@ -62,16 +62,34 @@ class Testnetname(unittest.TestCase):
 class TestJournalWritten(unittest.TestCase):
 
     def test_journal_written(self):
-        """Test to check if journal gets written to disk"""
+        """
+        Test to check if journal gets written to disk
+        And make sure that journal logs get written to /var
+        """
 
+        # Find PID
         out, err, eid = system("systemctl show systemd-journald.service -p MainPID")
         out = out.decode('utf-8')
         pid = out[8:-1]
+
+        # Find UID
+        out, err, eid = system("whoami")
+        username = out.decode('utf-8')
+        out, err, eid = system("id -u {0}".format(username))
+        uid = out.decode('utf-8').strip('\n')
+
+        # Journal log
         out, err, eid = system("sudo ls -l /proc/{0}/fd/ | grep journal".format(pid))
         out = out.decode('utf-8')
         err = err.decode('utf-8')
-        self.assertIn('system.journal', out)
+
+        # Find Machine-ID
+        with open('/etc/machine-id', 'r') as f:
+            mid = f.read().strip('\n')
+
+        self.assertIn('/var/log/journal/{0}/system.journal'.format(mid), out)
         self.assertTrue(re.search('user-.*.journal', out))
+        self.assertIn('/var/log/journal/{0}/user-{1}.journal'.format(mid, uid), out)
 
 
 if __name__ == '__main__':
