@@ -64,8 +64,8 @@ class TestJournalWritten(unittest.TestCase):
     Test to check that journal logs get written to disk(/var)
     and make sure that user-uid.journal is not lost on first boot
     the test should run on First Boot
-    https://github.com/kushaldas/tunirtests/issues/28
-    https://github.com/kushaldas/tunirtests/issues/48
+    https://bugzilla.redhat.com/show_bug.cgi?id=1265295
+    https://bugzilla.redhat.com/show_bug.cgi?id=1353688
     """
 
     def test_journal_written(self):
@@ -76,9 +76,7 @@ class TestJournalWritten(unittest.TestCase):
         pid = out[8:-1]
 
         # Find UID
-        out, err, eid = system("whoami")
-        username = out.decode('utf-8')
-        out, err, eid = system("id -u {0}".format(username))
+        out, err, eid = system("id -u")
         uid = out.decode('utf-8').strip('\n')
 
         # Journal log
