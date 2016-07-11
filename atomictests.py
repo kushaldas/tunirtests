@@ -2,7 +2,7 @@ import unittest
 import os
 import re
 import time
-from .testutils import system, if_atomic
+from .testutils import system, if_atomic, if_upgrade, if_rollback
 
 
 @unittest.skipUnless(if_atomic(), "It's not an atomic image")
@@ -12,7 +12,7 @@ class TestAtomicFirstBootRun(unittest.TestCase):
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
         out = out.decode('utf-8')
-        self.assertEquals('PASS\n', out)
+        self.assertEqual('PASS\n', out)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
@@ -54,27 +54,19 @@ class TestDockerInstalled(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+@unittest.skipUnless(if_upgrade(), "No upgrade is available for this Atomic host")
 class TestAtomicUpgradeRun(unittest.TestCase):
 
     def test_upgrade_run(self):
-        out, err, eid = system('sudo rpm-ostree status')
-        out = out.decode('utf-8')
-        self.assertTrue(out)
-        out, err, eid = system('sudo ostree admin status')
-        out = out.decode('utf-8')
-        print(out, err)
-        self.assertTrue(out)
-
-        # We create a file /etc/file1 before running rpm-ostree upgrade.
-        # This file should persist, even in rolling back the upgrade.
+        # We create a file /etc/file1 before running an upgrade.
+        # This file should persist, even after rolling back the upgrade.
         # This we assert in
         # TestAtomicRollbackPostReboot.test_atomic_rollback_post_reboot
-        out, err, eid = system(
-            'sudo cat /ostree/repo/refs/heads/ostree/0/1/0 > /etc/file1')
-        err = err.decode('utf-8')
-        print(out, err)
-        self.assertFalse(err)
-        out, err, eid = system('sudo rpm-ostree upgrade')
+        with open('/etc/file1', 'w') as f:
+            f.write('1\n')
+            f.close
+
+        out, err, eid = system('sudo atomic host upgrade')
         err = err.decode('utf-8')
         # Assert successful run
         print(out, err)
@@ -83,29 +75,29 @@ class TestAtomicUpgradeRun(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+@unittest.skipUnless(if_rollback(), "No rollback is available for this Atomic host")
 class TestAtomicUpgradePostReboot(unittest.TestCase):
 
     def test_upgrade_post_reboot(self):
         out, err, eid = system(
             'docker run --rm busybox true && echo "PASS"')
         out = out.decode('utf-8')
-        self.assertEquals('PASS\n', out)
+        self.assertEqual('PASS\n', out)
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+@unittest.skipUnless(if_rollback(), "No rollback is available for this Atomic host")
 class TestAtomicRollbackRun(unittest.TestCase):
 
     def test_atomic_rollback_run(self):
         # We make changes to the system by creating /etc/file2 before
         # running rollback. Once rollback is run, /etc/file2 will be
         # removed. We assert that in the following test case.
-        out, err, eid = system(
-            'sudo cat /ostree/repo/refs/heads/ostree/1/1/0 > /etc/file2')
-        err = err.decode('utf-8')
-        self.assertFalse(err)
-        print(out, err)
+        with open('/etc/file2', 'w') as f:
+            f.write('2\n')
+            f.close
 
-        out, err, eid = system('sudo rpm-ostree rollback')
+        out, err, eid = system('sudo atomic host rollback')
         err = err.decode('utf-8')
         self.assertFalse(err)
         print(out, err)
@@ -113,22 +105,19 @@ class TestAtomicRollbackRun(unittest.TestCase):
 
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
+@unittest.skipUnless(if_rollback(), "No rollback is available for this Atomic host")
 class TestAtomicRollbackPostReboot(unittest.TestCase):
 
     def test_atomic_rollback_post_reboot(self):
-        out, err, eid = system('rpm-ostree status')
+        out, err, eid = system('atomic host status')
         out = out.decode('utf-8')
         self.assertTrue(out)
 
         # Assert that file1 is present
-        out, err, eid = system('sudo cat /etc/file1')
-        out = out.decode('utf-8')
-        self.assertTrue(out)
+        self.assertTrue(os.path.isfile('/etc/file1'))
 
         # Assert that file2 is not present
-        out, err, eid = system('sudo cat /etc/file2')
-        err = err.decode('utf-8')
-        self.assertTrue(err)
+        self.assertFalse(os.path.isfile('/etc/file2'))
 
         # Assert that running busybox docker image works after rollback
         out, err, eid = system(

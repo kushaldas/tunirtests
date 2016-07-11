@@ -27,7 +27,6 @@ def if_netname_traditional():
         return True
     return False
 
-
 def if_vagrant():
     "Checks if system has vagrant user"
     with open('/etc/passwd', 'r') as fobj:
@@ -36,4 +35,19 @@ def if_vagrant():
                 user = line.split(':')[0]
                 if 'vagrant' in user:
                     return True
+    return False
+
+def if_upgrade():
+    "Check for available ostree upgrade for host."
+    out, err, eid = system('sudo atomic host upgrade --check')
+    if eid != 0:
+        return False
+    return True
+
+def if_rollback():
+    "Check for available rollback target for host."
+    out, err, eid = system('sudo atomic host status -p')
+    out = out.decode('utf-8')
+    if "ROLLBACK TARGET" in out:
+        return True
     return False
