@@ -60,18 +60,42 @@ class Testnetname(unittest.TestCase):
 
 
 class TestJournalWritten(unittest.TestCase):
+    """
+    Test to check that journal logs get written to disk(/var)
+    and make sure that user-uid.journal is not lost on first boot
+    the test should run on First Boot
+    https://bugzilla.redhat.com/show_bug.cgi?id=1265295
+    https://bugzilla.redhat.com/show_bug.cgi?id=1353688
+    """
 
     def test_journal_written(self):
-        """Test to check if journal gets written to disk"""
 
+        # Find PID
         out, err, eid = system("systemctl show systemd-journald.service -p MainPID")
         out = out.decode('utf-8')
         pid = out[8:-1]
+
+        # Find UID
+        out, err, eid = system("id -u")
+        uid = out.decode('utf-8').strip('\n')
+
+        # Journal log
         out, err, eid = system("sudo ls -l /proc/{0}/fd/ | grep journal".format(pid))
         out = out.decode('utf-8')
         err = err.decode('utf-8')
-        self.assertIn('system.journal', out)
-        self.assertTrue(re.search('user-.*.journal', out))
+
+        # Find Machine-ID
+        with open('/etc/machine-id', 'r') as f:
+            mid = f.read().strip('\n')
+
+        self.assertIn('/var/log/journal/{0}/system.journal'.format(mid), out)
+        self.assertIn('/var/log/journal/{0}/user-{1}.journal'.format(mid, uid), out)
+
+class TestJournalWrittenAfterReboot(unittest.TestCase):
+    "This test executes the same test TestJournalWritten but After Reboot"
+
+    def test_journal_written_after_reboot(self):
+        TestJournalWritten.test_journal_written(self)
 
 
 if __name__ == '__main__':
