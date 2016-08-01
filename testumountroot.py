@@ -12,7 +12,7 @@ class TestUmountRoot(unittest.TestCase):
     def test_umountroot(self):
         out, err, retcode = system("umount /")
         out = out.decode('utf-8')
-        self.assertNotEqual(retcode, 0)
+        self.assertEqual(retcode, 1)
 
 if __name__ == '__main__':
     unittest.main()
