@@ -143,7 +143,7 @@ class TestAtomicDockerImage(unittest.TestCase):
 class TestAtomicCommand(unittest.TestCase):
 
     def test_atomic_command(self):
-        out, err, eid = system('atomic run busybox /bin/ls')
+        out, err, eid = system('atomic run kushaldas/busybox')
         self.assertEqual(eid, 0, out+err)
 
 # https://github.com/kushaldas/tunirtests/issues/8
