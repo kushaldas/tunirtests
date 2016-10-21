@@ -3,9 +3,11 @@ From https://fedoraproject.org/wiki/QA:Testcase_base_service_manipulation.
 
 """
 import unittest
-from .testutils import system
+from .testutils import system, get_fedora_release
 
 SERVICE = "chronyd"
+if get_fedora_release() == "24":
+    SERVICE = "crond"
 
 class TestServiceManipulation(unittest.TestCase):
 
@@ -43,6 +45,19 @@ class TestServiceFinal(unittest.TestCase):
         out, err, eid = system('systemctl status {}.service'.format(SERVICE))
         out = out.decode('utf-8')
         self.assertIn('disabled', out)
+
+class TestServiceStop(unittest.TestCase):
+
+    def test_service(self):
+        out, err, eid = system("systemctl stop {}.service".format(SERVICE))
+        self.assertEqual(eid, 0, err)
+
+class TestServiceDisable(unittest.TestCase):
+
+    def test_service(self):
+        out, err, eid = system("systemctl disable {}.service".format(SERVICE))
+        self.assertEqual(eid, 0, err)
+
 
 if __name__ == '__main__':
     unittest.main()

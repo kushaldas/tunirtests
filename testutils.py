@@ -51,3 +51,16 @@ def if_rollback():
     if "ROLLBACK TARGET" in out:
         return True
     return False
+
+def get_fedora_release():
+    "Finds the fedora version in str"
+    ver = ""
+    with open("/etc/os-release") as fobj:
+        data = fobj.readlines()
+
+    for line in data:
+        line = line.strip()
+        if line.startswith("VERSION_ID="):
+            words = line.split("=")
+            ver = words[1]
+    return ver
