@@ -3,7 +3,7 @@ From https://fedoraproject.org/wiki/QA:Testcase_base_service_manipulation.
 
 """
 import unittest
-from .testutils import system, get_fedora_release
+from .testutils import get_fedora_release, system
 
 SERVICE = "chronyd"
 if get_fedora_release() == "24":

@@ -54,7 +54,7 @@ def if_rollback():
 
 def get_fedora_release():
     "Finds the fedora version in str"
-    ver = ""
+    ver = "24"
     with open("/etc/os-release") as fobj:
         data = fobj.readlines()
 
@@ -63,4 +63,5 @@ def get_fedora_release():
         if line.startswith("VERSION_ID="):
             words = line.split("=")
             ver = words[1]
+            return ver
     return ver
