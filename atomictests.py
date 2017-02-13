@@ -6,6 +6,17 @@ from .testutils import system, if_atomic, if_upgrade, if_rollback
 
 
 @unittest.skipUnless(if_atomic(), "It's not an atomic image")
+class TestAtomic01Status(unittest.TestCase):
+
+    def test_print_status(self):
+        """Print the rpm-ostree status"""
+        # We want this explicitly output to stdout
+        out, err, eid = system('rpm-ostree status')
+        out = out.decode('utf-8')
+        print(out)
+
+
+@unittest.skipUnless(if_atomic(), "It's not an atomic image")
 class TestAtomicFirstBootRun(unittest.TestCase):
 
     def test_docker_image_run(self):
