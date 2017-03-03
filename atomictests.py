@@ -12,8 +12,8 @@ class TestAtomic01Status(unittest.TestCase):
         """Print the rpm-ostree status"""
         # We want this explicitly output to stdout
         out, err, eid = system('rpm-ostree status')
-        out = out.decode('utf-8')
-        print(out)
+        out = out.decode('utf-8').encode('ascii', 'ignore')
+        print(out.decode('utf-8'))
 
 
 @unittest.skipUnless(if_atomic(), "It's not an atomic image")
