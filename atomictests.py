@@ -47,17 +47,16 @@ class TestDockerStorageSetup(unittest.TestCase):
         self.assertTrue(
             re.search(r'atomicos-root.*\d+(?:.\d+)?G.*lvm.*/sysroot.*\n', out)
         )
-        if get_fedora_release() in ["24", "25"]:
-            self.assertTrue(
-                re.search(r'atomicos-docker--pool_tmeta.*\d+(?:.\d+)?M.*lvm', out)
-            )
-            self.assertTrue(
-                re.search(r'atomicos-docker--pool_tdata.*\d+(?:.\d+)?G.*lvm', out)
-            )
-        else:
+
+        # For f27 we use overlay2 on the root filesystem. Nothing to check
+
+        # For f26 we use a separate LVM with XFS on top for docker+overlay
+        if get_fedora_release() in ["26"]:
             self.assertTrue(
                 re.search(r'atomicos-docker--root--lv.*\d+(?:.\d+)?G.*lvm', out)
             )
+
+
 
 @unittest.skipUnless(if_atomic(), "It's not an Atomic image")
 class TestDockerInstalled(unittest.TestCase):
